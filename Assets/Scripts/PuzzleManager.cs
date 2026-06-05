@@ -1,23 +1,31 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PuzzleManager : MonoBehaviour
 {
+    [Header("Bars")]
     public RectTransform bar1, bar2, bar3, bar4, bar5, bar6;
 
-    public TextMeshProUGUI[] slots; // slot 1–4
+    [Header("Slots")]
+    public TextMeshProUGUI[] slots; // slot huruf
+
+    [Header("UI Result")]
+    public GameObject winPanel;
+    public GameObject losePanel;
+
+    [Header("Sound")]
+    public ButtonSound buttonSound;
+    public AudioSource bgmSource;
 
     private int currentIndex = 0;
     private string correctAnswer = "FEDG";
 
     void Start()
     {
-        bar1.anchoredPosition = new Vector2(-485.5f, 0f);
-        bar2.anchoredPosition = new Vector2(-325f, -0.8f);
-        bar3.anchoredPosition = new Vector2(-93f, -0.3f);
-        bar4.anchoredPosition = new Vector2(154f, 1.7f);
-        bar5.anchoredPosition = new Vector2(380f, -27f);
-        bar6.anchoredPosition = new Vector2(531f, 2.3f);
+        // pastikan popup mati di awal
+        winPanel.SetActive(false);
+        losePanel.SetActive(false);
     }
 
     public void AddLetter(string letter)
@@ -45,15 +53,38 @@ public class PuzzleManager : MonoBehaviour
         if (result == correctAnswer)
         {
             Debug.Log("BENAR!");
+            ShowWin();
         }
         else
         {
             Debug.Log("SALAH!");
-            ResetSlots();
+            ShowLose();
         }
     }
 
-    void ResetSlots()
+    void ShowWin()
+    {
+        bgmSource.Pause();
+
+        buttonSound.PlayWinSound();
+
+        winPanel.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    void ShowLose()
+    {
+        bgmSource.Pause();
+
+        buttonSound.PlayLoseSound();
+
+        losePanel.SetActive(true);
+        Time.timeScale = 0f;
+
+        Invoke("ResetSlots", 1.5f);
+    }
+
+    public void ResetSlots()
     {
         foreach (var slot in slots)
         {
@@ -61,5 +92,38 @@ public class PuzzleManager : MonoBehaviour
         }
 
         currentIndex = 0;
+
+        losePanel.SetActive(false);
+
+        bgmSource.UnPause();
+
+        Time.timeScale = 1f;
+    }
+
+    // tombol NEXT (di WinPanel)
+    public void NextLevel()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("Level2");
+    }
+
+    // Back to level select
+    public void BackToLevelSelect()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("LevelSelect");
+    }
+
+    // back to main menu
+    public void BackToMainMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    // tombol TRY AGAIN
+    public void TryAgain()
+    {
+        ResetSlots();
     }
 }

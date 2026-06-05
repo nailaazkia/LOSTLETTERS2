@@ -2,21 +2,31 @@ using UnityEngine;
 
 public class RandomSpawn : MonoBehaviour
 {
-    public RectTransform spawnArea;
+    [Header("Bar yang diacak")]
     public RectTransform[] bars;
+
+    [Header("Area Random")]
+    public float minX = -500f;
+    public float maxX = 500f;
+
+    public float minY = -150f;
+    public float maxY = 150f;
 
     void Start()
     {
+        RandomizeBars();
+    }
+
+    void RandomizeBars()
+    {
         foreach (RectTransform bar in bars)
         {
-            // pindahkan ke SpawnArea
-            bar.SetParent(spawnArea);
+            float randomX = Random.Range(minX, maxX);
+            float randomY = Random.Range(minY, maxY);
 
-            // posisi acak 
-            float x = Random.Range(-250f, 250f);
-            float y = Random.Range(-100f, 100f);
+            bar.anchoredPosition = new Vector2(randomX, randomY);
 
-            bar.anchoredPosition = new Vector2(x, y);
+            Debug.Log(bar.name + " diacak");
         }
     }
 }
